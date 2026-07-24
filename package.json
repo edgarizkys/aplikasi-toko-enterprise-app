@@ -1,0 +1,18 @@
+{
+  "name": "aplikasi-toko-enterprise-app",
+  "version": "5.0.0-worldclass",
+  "description": "Aplikasi Toko Enterprise - Sistem POS & Inventory Toko Enterprise",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "node test/unit.test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "@libsql/client": "^0.3.5"
+  }
+}
