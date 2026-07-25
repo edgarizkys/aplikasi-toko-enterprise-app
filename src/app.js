@@ -14,6 +14,8 @@ app.use(express.json());
 app.use(rateLimiter);
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/api', apiRoutes);
+app.get('/login', (req, res) => { res.sendFile(path.join(__dirname, '../public/login.html')); });
+app.get('/dashboard', (req, res) => { res.sendFile(path.join(__dirname, '../public/dashboard.html')); });
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, '../public/index.html')); });
 initializeDatabase().then(() => { app.listen(PORT, () => console.log(`[LIVE WORLD-CLASS] Aplikasi Toko Enterprise on port ${PORT}`)); });
 module.exports = app;
