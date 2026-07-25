@@ -1,0 +1,150 @@
+/* ===== SHARED STYLES: Aplikasi Toko Enterprise ===== */
+:root {
+    --accent-from: orange-600;
+    --accent-to: red-600;
+}
+
+/* Smooth Scroll */
+html { scroll-behavior: smooth; }
+
+/* ===== SCROLL REVEAL ANIMATIONS ===== */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal-left.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+.reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal-right.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-scale.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Stagger delays */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+.delay-5 { transition-delay: 0.5s; }
+.delay-6 { transition-delay: 0.6s; }
+
+/* ===== TYPING EFFECT ===== */
+.typing-cursor {
+    border-right: 3px solid currentColor;
+    animation: cursorBlink 0.8s step-end infinite;
+    padding-right: 4px;
+}
+@keyframes cursorBlink {
+    0%, 100% { border-color: currentColor; }
+    50% { border-color: transparent; }
+}
+
+/* ===== HERO PARALLAX ===== */
+.parallax-bg {
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+@media (max-width: 768px) {
+    .parallax-bg { background-attachment: scroll; }
+}
+
+/* ===== FLOATING ANIMATION ===== */
+.float {
+    animation: floatAnim 3s ease-in-out infinite;
+}
+@keyframes floatAnim {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+/* ===== GLOW PULSE ===== */
+.glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite;
+}
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(var(--glow-rgb, 99, 102, 241), 0.3); }
+    50% { box-shadow: 0 0 40px rgba(var(--glow-rgb, 99, 102, 241), 0.6); }
+}
+
+/* ===== CARD TILT ON HOVER ===== */
+.tilt-card {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+}
+.tilt-card:hover {
+    transform: perspective(1000px) rotateX(3deg) rotateY(3deg) translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== GRADIENT TEXT ===== */
+.gradient-text {
+    background: linear-gradient(135deg, #fff 0%, var(--text-gradient, #a5b4fc) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== GLASS PANEL ===== */
+.glass {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ===== BUTTON SHINE EFFECT ===== */
+.btn-shine {
+    position: relative;
+    overflow: hidden;
+}
+.btn-shine::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shineBtn 3s infinite;
+}
+@keyframes shineBtn {
+    100% { left: 200%; }
+}
+
+/* ===== FADE IN UP ANIMATION ===== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+/* ===== COUNTER ANIMATION ===== */
+.counter-animate {
+    display: inline-block;
+    transition: all 0.3s ease;
+}
