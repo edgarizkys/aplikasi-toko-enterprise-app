@@ -1,18 +1,51 @@
+I'll generate the production-ready package.json for the Toko Enterprise application.
+
+```json
 {
-  "name": "aplikasi-toko-enterprise-app",
-  "version": "5.0.0-worldclass",
-  "description": "Aplikasi Toko Enterprise - Sistem POS & Inventory Toko Enterprise",
+  "name": "aplikasi-toko-enterprise",
+  "version": "1.0.0",
+  "description": "Aplikasi Toko Enterprise - Enterprise Store Management Platform",
   "main": "src/app.js",
+  "type": "module",
   "scripts": {
     "start": "node src/app.js",
-    "test": "node test/unit.test.js"
+    "dev": "nodemon src/app.js",
+    "test": "node --test test/**/*.test.js",
+    "lint": "eslint src/ --fix",
+    "migrate": "node src/db/migrate.js",
+    "seed": "node src/db/seed.js"
+  },
+  "keywords": [
+    "enterprise",
+    "store",
+    "inventory",
+    "sales",
+    "order-management",
+    "invoice",
+    "customer-management"
+  ],
+  "author": "Enterprise Development",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
     "helmet": "^7.1.0",
+    "dotenv": "^16.3.1",
+    "@libsql/client": "^0.3.5",
     "jsonwebtoken": "^9.0.2",
-    "@libsql/client": "^0.3.5"
+    "bcryptjs": "^2.4.3",
+    "uuid": "^9.0.0",
+    "express-validator": "^7.0.0",
+    "express-rate-limit": "^7.1.5",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.3"
   }
 }
