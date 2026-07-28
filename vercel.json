@@ -16,16 +16,18 @@
       "dest": "src/app.js"
     },
     {
-      "src": "/login",
-      "dest": "/public/login.html"
-    },
-    {
-      "src": "/dashboard",
-      "dest": "/public/dashboard.html"
-    },
-    {
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ]
+  ],
+  "env": {
+    "PORT": "3000",
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "src/app.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
 }
