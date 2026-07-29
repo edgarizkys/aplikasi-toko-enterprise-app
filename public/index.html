@@ -5,213 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Toko Enterprise</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { background-color: #f8fafc; }
-        .sidebar { background-color: #0F172A; }
-        .btn-primary { background-color: #2563EB; }
-        .btn-primary:hover { background-color: #1d4ed8; }
-    </style>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#0EA5E9', secondary: '#6366F1' } } } }
+    </script>
 </head>
-<body x-data="app()">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="sidebar w-64 flex-shrink-0 text-white flex flex-col">
-            <div class="p-6 text-xl font-bold border-b border-slate-700">
-                Toko Enterprise
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button @click="view = 'dashboard'" :class="view === 'dashboard' ? 'bg-blue-600' : 'hover:bg-slate-800'" class="w-full flex items-center p-3 rounded-lg transition">
-                    <i data-lucide="layout-dashboard" class="mr-3"></i> Dashboard
-                </button>
-                <button @click="view = 'products'" :class="view === 'products' ? 'bg-blue-600' : 'hover:bg-slate-800'" class="w-full flex items-center p-3 rounded-lg transition">
-                    <i data-lucide="package" class="mr-3"></i> Produk
-                </button>
-                <button @click="view = 'orders'" :class="view === 'orders' ? 'bg-blue-600' : 'hover:bg-slate-800'" class="w-full flex items-center p-3 rounded-lg transition">
-                    <i data-lucide="shopping-cart" class="mr-3"></i> Pesanan
-                </button>
-                <button @click="view = 'suppliers'" :class="view === 'suppliers' ? 'bg-blue-600' : 'hover:bg-slate-800'" class="w-full flex items-center p-3 rounded-lg transition">
-                    <i data-lucide="truck" class="mr-3"></i> Pemasok
-                </button>
-                <button @click="view = 'employees'" :class="view === 'employees' ? 'bg-blue-600' : 'hover:bg-slate-800'" class="w-full flex items-center p-3 rounded-lg transition">
-                    <i data-lucide="users" class="mr-3"></i> Karyawan
-                </button>
-            </nav>
-            <div class="p-4 border-t border-slate-700 text-xs text-slate-400">
-                v1.0.0 Enterprise Edition
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col overflow-y-auto">
-            <!-- Header -->
-            <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
-                <h2 class="text-xl font-semibold text-slate-800" x-text="title()"></h2>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-slate-500">Admin User</span>
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
-                </div>
-            </header>
-
-            <!-- Content Area -->
-            <div class="p-6">
-                <!-- Dashboard View -->
-                <template x-if="view === 'dashboard'">
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                                <p class="text-sm text-slate-500">Total Penjualan</p>
-                                <h3 class="text-2xl font-bold text-slate-800">Rp 69.000.000</h3>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                                <p class="text-sm text-slate-500">Total Pesanan</p>
-                                <h3 class="text-2xl font-bold text-slate-800">124</h3>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                                <p class="text-sm text-slate-500">Stok Rendah</p>
-                                <h3 class="text-2xl font-bold text-red-600">5 Item</h3>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                                <p class="text-sm text-slate-500">Karyawan Aktif</p>
-                                <h3 class="text-2xl font-bold text-slate-800">12</h3>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                            <h4 class="font-bold mb-4">Aktivitas Terakhir</h4>
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between border-b pb-2">
-                                    <span>INV-2023-002 - Bank Sejahtera</span>
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">Pending</span>
-                                </div>
-                                <div class="flex items-center justify-between border-b pb-2">
-                                    <span>INV-2023-001 - PT Teknologi Maju</span>
-                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Paid</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- Entity Table View -->
-                <template x-if="view !== 'dashboard'">
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div class="p-4 border-b flex justify-between items-center">
-                            <input type="text" placeholder="Cari..." class="border rounded-lg px-4 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <button @click="openModal()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                                <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Tambah <span x-text="entityLabel()"></span>
-                            </button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50 text-slate-600 text-sm uppercase">
-                                    <tr>
-                                        <template x-for="field in fields[view]">
-                                            <th class="px-6 py-4 font-semibold" x-text="field.label"></th>
-                                        </template>
-                                        <th class="px-6 py-4 font-semibold text-right">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <template x-for="item in data[view]">
-                                        <tr class="hover:bg-slate-50 transition">
-                                            <template x-for="field in fields[view]">
-                                                <td class="px-6 py-4 text-sm text-slate-700">
-                                                    <span x-text="formatValue(item[field.key], field.type)"></span>
-                                                </td>
-                                            </template>
-                                            <td class="px-6 py-4 text-right">
-                                                <button class="text-blue-600 hover:text-blue-800 mr-3"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                                                <button class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </template>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal Form -->
-    <div x-show="modalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4" x-cloak>
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-            <div class="p-6 border-b flex justify-between items-center">
-                <h3 class="text-lg font-bold">Tambah <span x-text="entityLabel()"></span></h3>
-                <button @click="modalOpen = false" class="text-slate-400 hover:text-slate-600">&times;</button>
-            </div>
-            <div class="p-6 space-y-4">
-                <template x-for="field in fields[view]">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1" x-text="field.label"></label>
-                        <input :type="field.type === 'number' ? 'number' : (field.type === 'date' ? 'date' : 'text')" 
-                               class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                </template>
-            </div>
-            <div class="p-6 bg-slate-50 flex justify-end space-x-3">
-                <button @click="modalOpen = false" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg">Batal</button>
-                <button @click="modalOpen = false" class="btn-primary text-white px-4 py-2 rounded-lg">Simpan</button>
+<body class="bg-gray-50 text-gray-900">
+    <nav class="bg-gradient-to-r from-primary to-secondary p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Toko Enterprise</h1>
+            <div class="space-x-4">
+                <button onclick="render('products')" class="hover:underline">Produk</button>
+                <button onclick="render('sales')" class="hover:underline">Penjualan</button>
+                <button onclick="render('customers')" class="hover:underline">Pelanggan</button>
             </div>
         </div>
-    </div>
+    </nav>
+
+    <main id="app" class="container mx-auto p-6">
+        <div id="content" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-2xl font-semibold mb-4">Dashboard</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-primary">Total Produk: <span id="prod-count">0</span></div>
+                <div class="p-4 bg-indigo-50 rounded-lg border-l-4 border-secondary">Total Penjualan: <span id="sale-count">0</span></div>
+                <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">Total Pelanggan: <span id="cust-count">0</span></div>
+            </div>
+        </div>
+    </main>
 
     <script>
-        function app() {
-            return {
-                view: 'dashboard',
-                modalOpen: false,
-                fields: {
-                    products: [
-                        {key: 'sku', label: 'SKU', type: 'text'},
-                        {key: 'name', label: 'Nama Produk', type: 'text'},
-                        {key: 'category', label: 'Kategori', type: 'text'},
-                        {key: 'price', label: 'Harga', type: 'number'},
-                        {key: 'stock', label: 'Stok', type: 'number'}
-                    ],
-                    orders: [
-                        {key: 'order_no', label: 'Nomor Pesanan', type: 'text'},
-                        {key: 'customer', label: 'Pelanggan', type: 'text'},
-                        {key: 'total', label: 'Total', type: 'number'},
-                        {key: 'status', label: 'Status', type: 'text'},
-                        {key: 'date', label: 'Tanggal', type: 'date'}
-                    ],
-                    suppliers: [
-                        {key: 'name', label: 'Nama Perusahaan', type: 'text'},
-                        {key: 'contact', label: 'Kontak', type: 'text'},
-                        {key: 'email', label: 'Email', type: 'text'},
-                        {key: 'category', label: 'Kategori Suplai', type: 'text'}
-                    ],
-                    employees: [
-                        {key: 'name', label: 'Nama Lengkap', type: 'text'},
-                        {key: 'role', label: 'Jabatan', type: 'text'},
-                        {key: 'department', label: 'Departemen', type: 'text'},
-                        {key: 'salary', label: 'Gaji', type: 'number'}
-                    ]
-                },
-                data: {
-                    products: [
-                        {id: 1, sku: 'SRV-001', name: 'Enterprise Server R740', category: 'Hardware', price: 45000000, stock: 12},
-                        {id: 2, sku: 'SW-002', name: 'Cloud License Annual', category: 'Software', price: 12000000, stock: 100}
-                    ],
-                    orders: [
-                        {id: 1, order_no: 'INV-2023-001', customer: 'PT Teknologi Maju', total: 57000000, status: 'Paid', date: '2023-11-01'},
-                        {id: 2, order_no: 'INV-2023-002', customer: 'Bank Sejahtera', total: 12000000, status: 'Pending', date: '2023-11-05'}
-                    ],
-                    suppliers: [
-                        {id: 1, name: 'Dell Indonesia', contact: '021-555666', email: 'sales@dell.id', category: 'Hardware'},
-                        {id: 2, name: 'Microsoft Corp', contact: '021-777888', email: 'license@microsoft.com', category: 'Software'}
-                    ],
-                    employees: [
-                        {id: 1, name: 'Budi Raharjo', role: 'Store Manager', department: 'Operations', salary: 15000000},
-                        {id: 2, name: 'Siti Aminah', role: 'Accountant', department: 'Finance', salary: 9000000}
-                    ]
-                },
-                title() {
-                    const titles = {
-                        dashboard: 'Dashboard Ringkasan',
-                        products: 'Manajemen Produk',
-                        orders: 'Daftar Pesanan',
-                        suppliers:
+        const state = {
+            products: [],
+            sales: [],
+            customers: []
+        };
+
+        async function fetchData() {
+            try {
+                const res = await fetch('/api/data');
+                const data = await res.json();
+                Object.assign(state, data);
+                document.getElementById('prod-count').innerText = state.products.length;
+                document.getElementById('sale-count').innerText = state.sales.length;
+                document.getElementById('cust-count').innerText = state.customers.length;
+            } catch (e) { console.error('Fetch fail', e); }
+        }
+
+        function render(view) {
+            const content = document.getElementById('content');
+            const data = state[view] || [];
+            content.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4 capitalize">${view}</h2>
+                <table class="w-full text-left border-collapse">
+                    <thead><tr class="border-b">${Object.keys(data[0] || {}).map(k => `<th class="p-2">${k}</th>`).join('')}</tr></thead>
+                    <tbody>${data.map(item => `<tr class="border-b">${Object.values(item).map(v => `<td class="p-2">${v}</td>`).join('')}</tr>`).join('')}</tbody>
+                </table>
+            `;
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>
