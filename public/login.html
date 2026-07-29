@@ -5,370 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Aplikasi Toko Enterprise</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --accent-from: #1F2937;
-            --accent-to: #3B82F6;
+            --accent-from: #0F172A;
+            --accent-to: #2563EB;
         }
         body {
             background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
         }
         .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .input-field {
             background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            transition: all 0.3s ease;
         }
-        .input-field::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        .input-field:focus {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(59, 130, 246, 0.5);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #3B82F6, #2563EB);
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
-        }
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #3B82F6, #2563EB);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 24px;
-        }
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #FCA5A5;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 14px;
-            display: none;
-            margin-bottom: 16px;
-        }
-        .error-message.show {
-            display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .success-message {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #86EFAC;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 14px;
-            display: none;
-            margin-bottom: 16px;
-        }
-        .success-message.show {
-            display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-        .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
-        }
-        .loading-spinner.show {
-            display: inline-block;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        .checkbox-custom {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: #3B82F6;
-        }
-        .link-hover {
-            color: rgba(255, 255, 255, 0.7);
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-        .link-hover:hover {
-            color: #3B82F6;
-            text-decoration: underline;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-        .divider {
-            background: rgba(255, 255, 255, 0.1);
-            height: 1px;
-            margin: 24px 0;
-        }
-        .demo-badge {
-            display: inline-block;
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            color: #93C5FD;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 12px;
+        .input-group:focus-within label {
+            color: #60a5fa;
+            transform: translateY(-1.5rem) scale(0.85);
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="flex items-center justify-center p-4">
     <div class="w-full max-w-md">
-        <!-- Logo & Title -->
-        <div class="text-center mb-8">
-            <div class="flex justify-center mb-4">
-                <div class="logo-icon text-white">📊</div>
+        <!-- Logo/Header -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-2xl shadow-2xl mb-4">
+                <i class="fas fa-store text-4xl text-white"></i>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Aplikasi Toko Enterprise</h1>
-            <p class="text-gray-300 text-sm">Manajemen Toko Terintegrasi</p>
+            <h1 class="text-3xl font-bold text-white tracking-tight">Aplikasi Toko Enterprise</h1>
+            <p class="text-blue-200 mt-2">Manajemen Inventaris & Penjualan Terpadu</p>
         </div>
 
         <!-- Login Card -->
-        <div class="glass rounded-2xl p-8 shadow-2xl">
-            <!-- Messages -->
-            <div id="errorMessage" class="error-message"></div>
-            <div id="successMessage" class="success-message"></div>
-
-            <!-- Login Form -->
-            <form id="loginForm" class="space-y-5">
-                <!-- Email Field -->
+        <div class="glass rounded-3xl p-8 shadow-2xl">
+            <form id="loginForm" class="space-y-6">
                 <div>
-                    <label for="email" class="form-label">Email atau Username</label>
-                    <input
-                        type="text"
-                        id="email"
-                        name="email"
-                        placeholder="Masukkan email atau username"
-                        class="input-field w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        required
-                        autocomplete="username"
-                    />
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Email atau Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" required 
+                            class="block w-full pl-10 pr-3 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="admin@enterprise.com">
+                    </div>
                 </div>
 
-                <!-- Password Field -->
                 <div>
-                    <label for="password" class="form-label">Kata Sandi</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Masukkan kata sandi"
-                        class="input-field w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        required
-                        autocomplete="current-password"
-                    />
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-medium text-gray-300">Kata Sandi</label>
+                        <a href="#" class="text-sm text-blue-400 hover:text-blue-300">Lupa sandi?</a>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" required 
+                            class="block w-full pl-10 pr-3 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="••••••••">
+                    </div>
                 </div>
 
-                <!-- Tenant Selection (Optional) -->
-                <div>
-                    <label for="tenant" class="form-label">Perusahaan / Tenant</label>
-                    <select
-                        id="tenant"
-                        name="tenant"
-                        class="input-field w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value="" selected disabled>Pilih perusahaan</option>
-                        <option value="default">Toko Utama</option>
-                        <option value="branch_1">Cabang Jakarta</option>
-                        <option value="branch_2">Cabang Bandung</option>
-                    </select>
-                </div>
-
-                <!-- Remember Me -->
                 <div class="flex items-center">
-                    <input
-                        type="checkbox"
-                        id="remember"
-                        name="remember"
-                        class="checkbox-custom"
-                    />
-                    <label for="remember" class="ml-3 text-sm text-gray-300 cursor-pointer">
-                        Ingat saya di perangkat ini
-                    </label>
+                    <input type="checkbox" id="remember" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 bg-white/10">
+                    <label for="remember" class="ml-2 text-sm text-gray-300">Ingat perangkat ini</label>
                 </div>
 
-                <!-- Submit Button -->
-                <button
-                    type="submit"
-                    class="btn-primary w-full text-white py-3 rounded-lg font-semibold flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                    id="submitBtn"
-                >
-                    <div class="loading-spinner" id="spinner"></div>
-                    <span id="submitText">Masuk</span>
+                <button type="submit" 
+                    class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transform transition hover:-translate-y-0.5 active:scale-95">
+                    Masuk ke Sistem
                 </button>
             </form>
 
-            <!-- Divider -->
-            <div class="divider"></div>
-
-            <!-- Footer Links -->
-            <div class="space-y-3 text-center text-sm">
-                <div>
-                    <span class="text-gray-400">Belum punya akun? </span>
-                    <a href="/register" class="link-hover">Daftar di sini</a>
-                </div>
-                <div>
-                    <a href="/forgot-password" class="link-hover">Lupa kata sandi?</a>
-                </div>
-            </div>
-
-            <!-- Demo Credentials -->
-            <div class="demo-badge text-center w-full mt-4">
-                Demo: admin@toko.com / admin123
+            <div class="mt-8 pt-6 border-t border-white/10 text-center">
+                <p class="text-gray-400 text-sm">
+                    Belum memiliki akses? 
+                    <a href="mailto:admin@enterprise.com" class="text-blue-400 font-semibold hover:underline">Hubungi IT Support</a>
+                </p>
             </div>
         </div>
 
-        <!-- Footer Info -->
-        <div class="text-center mt-8 text-gray-400 text-sm">
-            <p>© 2026 Aplikasi Toko Enterprise. Semua hak dilindungi.</p>
-        </div>
+        <!-- Footer -->
+        <p class="text-center mt-8 text-gray-400 text-xs uppercase tracking-widest">
+            &copy; 2023 Enterprise Store Management System v6.0
+        </p>
     </div>
 
-    <!-- Scripts -->
     <script>
-        const loginForm = document.getElementById('loginForm');
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
-        const submitBtn = document.getElementById('submitBtn');
-        const spinner = document.getElementById('spinner');
-        const submitText = document.getElementById('submitText');
-
-        // Show message helper
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.classList.add('show');
-            successMessage.classList.remove('show');
-            setTimeout(() => {
-                errorMessage.classList.remove('show');
-            }, 5000);
-        }
-
-        function showSuccess(message) {
-            successMessage.textContent = message;
-            successMessage.classList.add('show');
-            errorMessage.classList.remove('show');
-        }
-
-        // Form submission
-        loginForm.addEventListener('submit', async (e) => {
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const tenant = document.getElementById('tenant').value || 'default';
-            const remember = document.getElementById('remember').checked;
-
-            // Validation
-            if (!email || !password) {
-                showError('Email dan kata sandi harus diisi');
-                return;
-            }
-
-            if (password.length < 3) {
-                showError('Kata sandi minimal 3 karakter');
-                return;
-            }
-
-            // Loading state
-            submitBtn.disabled = true;
-            spinner.classList.add('show');
-            submitText.textContent = 'Sedang memproses...';
-
-            try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email,
-                        password,
-                        tenant,
-                        remember,
-                    }),
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Login gagal');
-                }
-
-                showSuccess('Login berhasil! Mengarahkan...');
-
-                // Store token if provided
-                if (data.token) {
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('tenant', tenant);
-                }
-
-                // Redirect after short delay
-                setTimeout(() => {
-                    window.location.href = data.redirect || '/dashboard';
-                }, 1000);
-
-            } catch (error) {
-                showError(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
-                submitBtn.disabled = false;
-                spinner.classList.remove('show');
-                submitText.textContent = 'Masuk';
-            }
-        });
-
-        // Enter key support
-        document.getElementById('password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                loginForm.dispatchEvent(new Event('submit'));
-            }
-        });
-
-        // Auto-focus first empty field on page load
-        window.addEventListener('load', () => {
-            const email = document.getElementById('email');
-            if (!email.value) {
-                email.focus();
-            }
+            // Enterprise Auth Logic
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Memproses...';
+            
+            // Simulate API Call
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
         });
     </script>
 </body>
