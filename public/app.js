@@ -9,48 +9,38 @@ const db = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN
 });
 
-const entities = ['products', 'orders', 'suppliers', 'employees'];
+const initDb = async () => {
+  await db.execute(`CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT, category TEXT, price REAL, stock INTEGER)`);
+  await db.execute(`CREATE TABLE IF NOT EXISTS sales (id INTEGER PRIMARY KEY, product_name TEXT, quantity INTEGER, total REAL, date TEXT)`);
+  await db.execute(`CREATE TABLE IF NOT EXISTS customers (id INTEGER PRIMARY KEY, name TEXT, phone TEXT, points INTEGER)`);
+};
 
-entities.forEach(entity => {
-  app.get(`/api/${entity}`, async (req, res) => {
-    const { page = 1, limit = 10 } = req.query;
-    const offset = (page - 1) * limit;
-    try {
-      const rs = await db.execute({
-        sql: `SELECT * FROM ${entity} LIMIT ? OFFSET ?`,
-        args: [Number(limit), Number(offset)]
-      });
-      res.json({ data: rs.rows, page, limit });
-    } catch (e) {
-      res.status(500).json({ error: e.message });
-    }
-  });
+initDb();
 
-  app.post(`/api/${entity}`, async (req, res) => {
-    const keys = Object.keys(req.body);
-    const values = Object.values(req.body);
-    const placeholders = keys.map(() => '?').join(',');
-    try {
-      await db.execute({
-        sql: `INSERT INTO ${entity} (${keys.join(',')}) VALUES (${placeholders})`,
-        args: values
-      });
-      res.status(201).json({ message: 'Success' });
-    } catch (e) {
-      res.status(400).json({ error: e.message });
-    }
-  });
+app.get('/api/:entity', async (req, res) => {
+  const { entity } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
+  
+  try {
+    const result = await db.execute(`SELECT * FROM ${entity} LIMIT ? OFFSET ?`, [Number(limit), Number(offset)]);
+    res.json({ data: result.rows, page, limit });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.get('/api/dashboard/stats', async (req, res) => {
+app.post('/api/:entity', async (req, res) => {
+  const { entity } = req.params;
+  const keys = Object.keys(req.body);
+  const values = Object.values(req.body);
+  const placeholders = keys.map(() => '?').join(',');
+  
   try {
-    const [sales, stock] = await Promise.all([
-      db.execute('SELECT SUM(total) as revenue FROM orders'),
-      db.execute('SELECT SUM(stock) as total_stock FROM products')
-    ]);
-    res.json({ revenue: sales.rows[0].revenue, stock: stock.rows[0].total_stock });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+    await db.execute(`INSERT INTO ${entity} (${keys.join(',')}) VALUES (${placeholders})`, values);
+    res.status(201).json({ message: 'Success' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 });
 
