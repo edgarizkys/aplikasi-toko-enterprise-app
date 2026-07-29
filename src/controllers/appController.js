@@ -1,58 +1,36 @@
 const { tursoClient } = require('../config/database');
 
-// ==================== PRODUCTS ====================
+const getTenantId = (req) => req.headers['x-tenant-id'] || 'default_tenant';
 
-exports.getAllProducts = async (req, res) => {
-    try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
-        const offset = (page - 1) * limit;
-        const search = req.query.search || '';
-
-        const result = await tursoClient.execute({
-            sql: `SELECT * FROM products 
-                  WHERE tenant_id = ? AND (name LIKE ? OR sku LIKE ? OR category LIKE ?)
-                  ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-            args: [tenantId, `%${search}%`, `%${search}%`, `%${search}%`, limit, offset]
-        });
-
-        const countResult = await tursoClient.execute({
-            sql: `SELECT COUNT(*) as total FROM products 
-                  WHERE tenant_id = ? AND (name LIKE ? OR sku LIKE ? OR category LIKE ?)`,
-            args: [tenantId, `%${search}%`, `%${search}%`, `%${search}%`]
-        });
-
-        res.json({
-            success: true,
-            data: result.rows,
-            pagination: {
-                page,
-                limit,
-                total: countResult.rows[0].total,
-                pages: Math.ceil(countResult.rows[0].total / limit)
-            }
-        });
-    } catch (e) {
-        res.status(500).json({ success: false, error: e.message });
-    }
+const paginate = async (table, tenantId, page, limit) => {
+    const offset = (page - 1) * limit;
+    const data = await tursoClient.execute({
+        sql: `SELECT * FROM ${table} WHERE tenant_id = ? LIMIT ? OFFSET ?`,
+        args: [tenantId, limit, offset]
+    });
+    const count = await tursoClient.execute({
+        sql: `SELECT COUNT(*) as total FROM ${table} WHERE tenant_id = ?`,
+        args: [tenantId]
+    });
+    const total = count.rows[0].total;
+    return {
+        rows: data.rows,
+        pagination: {
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit)
+        }
+    };
 };
 
-exports.getProductById = async (req, res) => {
+// PRODUCTS
+exports.getAllProducts = async (req, res) => {
     try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
-        const { id } = req.params;
-
-        const result = await tursoClient.execute({
-            sql: 'SELECT * FROM products WHERE id = ? AND tenant_id = ?',
-            args: [id, tenantId]
-        });
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Produk tidak ditemukan' });
-        }
-
-        res.json({ success: true, data: result.rows[0] });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const result = await paginate('products', getTenantId(req), page, limit);
+        res.json({ success: true, ...result });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
@@ -60,37 +38,12 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
     try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
-        const { sku, name, category, description, price, cost, stock, reorder_point, supplier_id, status } = req.body;
-
-        if (!sku || !name || !category || !price || !cost || stock === undefined) {
-            return res.status(400).json({ success: false, error: 'Bidang wajib diisi' });
-        }
-
+        const { sku, name, category, price, stock } = req.body;
         const result = await tursoClient.execute({
-            sql: `INSERT INTO products 
-                  (tenant_id, sku, name, category, description, price, cost, stock, reorder_point, supplier_id, status, created_at, updated_at)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
-            args: [tenantId, sku, name, category, description || '', price, cost, stock, reorder_point || 5, supplier_id || '', status || 'active']
+            sql: 'INSERT INTO products (tenant_id, sku, name, category, price, stock) VALUES (?, ?, ?, ?, ?, ?)',
+            args: [getTenantId(req), sku, name, category, price, stock]
         });
-
-        res.status(201).json({
-            success: true,
-            data: {
-                id: Number(result.lastInsertRowid),
-                tenant_id: tenantId,
-                sku,
-                name,
-                category,
-                description,
-                price,
-                cost,
-                stock,
-                reorder_point,
-                supplier_id,
-                status: status || 'active'
-            }
-        });
+        res.status(201).json({ success: true, id: Number(result.lastInsertRowid) });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
@@ -98,77 +51,13 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
         const { id } = req.params;
-        const { sku, name, category, description, price, cost, stock, reorder_point, supplier_id, status } = req.body;
-
-        const checkResult = await tursoClient.execute({
-            sql: 'SELECT id FROM products WHERE id = ? AND tenant_id = ?',
-            args: [id, tenantId]
-        });
-
-        if (checkResult.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Produk tidak ditemukan' });
-        }
-
-        const updates = [];
-        const values = [];
-
-        if (sku !== undefined) {
-            updates.push('sku = ?');
-            values.push(sku);
-        }
-        if (name !== undefined) {
-            updates.push('name = ?');
-            values.push(name);
-        }
-        if (category !== undefined) {
-            updates.push('category = ?');
-            values.push(category);
-        }
-        if (description !== undefined) {
-            updates.push('description = ?');
-            values.push(description);
-        }
-        if (price !== undefined) {
-            updates.push('price = ?');
-            values.push(price);
-        }
-        if (cost !== undefined) {
-            updates.push('cost = ?');
-            values.push(cost);
-        }
-        if (stock !== undefined) {
-            updates.push('stock = ?');
-            values.push(stock);
-        }
-        if (reorder_point !== undefined) {
-            updates.push('reorder_point = ?');
-            values.push(reorder_point);
-        }
-        if (supplier_id !== undefined) {
-            updates.push('supplier_id = ?');
-            values.push(supplier_id);
-        }
-        if (status !== undefined) {
-            updates.push('status = ?');
-            values.push(status);
-        }
-
-        if (updates.length === 0) {
-            return res.status(400).json({ success: false, error: 'Tidak ada data untuk diperbarui' });
-        }
-
-        updates.push('updated_at = datetime(\'now\')');
-        values.push(id);
-        values.push(tenantId);
-
+        const { sku, name, category, price, stock } = req.body;
         await tursoClient.execute({
-            sql: `UPDATE products SET ${updates.join(', ')} WHERE id = ? AND tenant_id = ?`,
-            args: values
+            sql: 'UPDATE products SET sku = ?, name = ?, category = ?, price = ?, stock = ? WHERE id = ? AND tenant_id = ?',
+            args: [sku, name, category, price, stock, id, getTenantId(req)]
         });
-
-        res.json({ success: true, message: 'Produk berhasil diperbarui' });
+        res.json({ success: true });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
@@ -176,109 +65,23 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
     try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
-        const { id } = req.params;
-
-        const checkResult = await tursoClient.execute({
-            sql: 'SELECT id FROM products WHERE id = ? AND tenant_id = ?',
-            args: [id, tenantId]
-        });
-
-        if (checkResult.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Produk tidak ditemukan' });
-        }
-
         await tursoClient.execute({
             sql: 'DELETE FROM products WHERE id = ? AND tenant_id = ?',
-            args: [id, tenantId]
+            args: [req.params.id, getTenantId(req)]
         });
-
-        res.json({ success: true, message: 'Produk berhasil dihapus' });
+        res.json({ success: true });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
 };
 
-// ==================== ORDERS ====================
-
+// ORDERS
 exports.getAllOrders = async (req, res) => {
     try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
-        const offset = (page - 1) * limit;
-        const search = req.query.search || '';
-        const status = req.query.status || '';
-
-        let sql = `SELECT * FROM orders WHERE tenant_id = ?`;
-        const args = [tenantId];
-
-        if (search) {
-            sql += ` AND (order_number LIKE ? OR customer_id LIKE ?)`;
-            args.push(`%${search}%`, `%${search}%`);
-        }
-
-        if (status) {
-            sql += ` AND status = ?`;
-            args.push(status);
-        }
-
-        sql += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
-        args.push(limit, offset);
-
-        const result = await tursoClient.execute({
-            sql: sql,
-            args: args
-        });
-
-        let countSql = `SELECT COUNT(*) as total FROM orders WHERE tenant_id = ?`;
-        const countArgs = [tenantId];
-
-        if (search) {
-            countSql += ` AND (order_number LIKE ? OR customer_id LIKE ?)`;
-            countArgs.push(`%${search}%`, `%${search}%`);
-        }
-
-        if (status) {
-            countSql += ` AND status = ?`;
-            countArgs.push(status);
-        }
-
-        const countResult = await tursoClient.execute({
-            sql: countSql,
-            args: countArgs
-        });
-
-        res.json({
-            success: true,
-            data: result.rows,
-            pagination: {
-                page,
-                limit,
-                total: countResult.rows[0].total,
-                pages: Math.ceil(countResult.rows[0].total / limit)
-            }
-        });
-    } catch (e) {
-        res.status(500).json({ success: false, error: e.message });
-    }
-};
-
-exports.getOrderById = async (req, res) => {
-    try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
-        const { id } = req.params;
-
-        const result = await tursoClient.execute({
-            sql: 'SELECT * FROM orders WHERE id = ? AND tenant_id = ?',
-            args: [id, tenantId]
-        });
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Pesanan tidak ditemukan' });
-        }
-
-        res.json({ success: true, data: result.rows[0] });
+        const limit = parseInt(req.query.limit) || 10;
+        const result = await paginate('orders', getTenantId(req), page, limit);
+        res.json({ success: true, ...result });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
@@ -286,140 +89,93 @@ exports.getOrderById = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
     try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
-        const { order_number, customer_id, order_date, total_amount, discount, tax, final_amount, status, payment_method, delivery_date } = req.body;
-
-        if (!order_number || !customer_id || !order_date || total_amount === undefined) {
-            return res.status(400).json({ success: false, error: 'Bidang wajib diisi' });
-        }
-
+        const { order_no, customer, total, status, date } = req.body;
         const result = await tursoClient.execute({
-            sql: `INSERT INTO orders 
-                  (tenant_id, order_number, customer_id, order_date, total_amount, discount, tax, final_amount, status, payment_method, delivery_date, created_at, updated_at)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
-            args: [tenantId, order_number, customer_id, order_date, total_amount, discount || 0, tax || 0, final_amount || total_amount, status || 'pending', payment_method || '', delivery_date || '']
+            sql: 'INSERT INTO orders (tenant_id, order_no, customer, total, status, date) VALUES (?, ?, ?, ?, ?, ?)',
+            args: [getTenantId(req), order_no, customer, total, status, date]
+        });
+        res.status(201).json({ success: true, id: Number(result.lastInsertRowid) });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+};
+
+// SUPPLIERS
+exports.getAllSuppliers = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const result = await paginate('suppliers', getTenantId(req), page, limit);
+        res.json({ success: true, ...result });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+};
+
+exports.createSupplier = async (req, res) => {
+    try {
+        const { name, contact, email, category } = req.body;
+        const result = await tursoClient.execute({
+            sql: 'INSERT INTO suppliers (tenant_id, name, contact, email, category) VALUES (?, ?, ?, ?, ?)',
+            args: [getTenantId(req), name, contact, email, category]
+        });
+        res.status(201).json({ success: true, id: Number(result.lastInsertRowid) });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+};
+
+// EMPLOYEES
+exports.getAllEmployees = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const result = await paginate('employees', getTenantId(req), page, limit);
+        res.json({ success: true, ...result });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+};
+
+exports.createEmployee = async (req, res) => {
+    try {
+        const { name, role, department, salary } = req.body;
+        const result = await tursoClient.execute({
+            sql: 'INSERT INTO employees (tenant_id, name, role, department, salary) VALUES (?, ?, ?, ?, ?)',
+            args: [getTenantId(req), name, role, department, salary]
+        });
+        res.status(201).json({ success: true, id: Number(result.lastInsertRowid) });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+};
+
+// DASHBOARD ANALYTICS
+exports.getDashboardStats = async (req, res) => {
+    try {
+        const tenantId = getTenantId(req);
+        const sales = await tursoClient.execute({
+            sql: 'SELECT SUM(total) as revenue, COUNT(*) as count FROM orders WHERE tenant_id = ? AND status = "Paid"',
+            args: [tenantId]
+        });
+        const stock = await tursoClient.execute({
+            sql: 'SELECT COUNT(*) as low_stock FROM products WHERE tenant_id = ? AND stock < 10',
+            args: [tenantId]
+        });
+        const employees = await tursoClient.execute({
+            sql: 'SELECT SUM(salary) as payroll FROM employees WHERE tenant_id = ?',
+            args: [tenantId]
         });
 
-        res.status(201).json({
+        res.json({
             success: true,
-            data: {
-                id: Number(result.lastInsertRowid),
-                tenant_id: tenantId,
-                order_number,
-                customer_id,
-                order_date,
-                total_amount,
-                discount,
-                tax,
-                final_amount,
-                status: status || 'pending',
-                payment_method,
-                delivery_date
+            stats: {
+                revenue: sales.rows[0].revenue || 0,
+                orderCount: sales.rows[0].count || 0,
+                lowStockAlerts: stock.rows[0].low_stock || 0,
+                monthlyPayroll: employees.rows[0].payroll || 0
             }
         });
-    } catch (e) {
-        res.status(500).json({ success: false, error: e.message });
-    }
-};
-
-exports.updateOrder = async (req, res) => {
-    try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
-        const { id } = req.params;
-        const { order_number, customer_id, order_date, total_amount, discount, tax, final_amount, status, payment_method, delivery_date } = req.body;
-
-        const checkResult = await tursoClient.execute({
-            sql: 'SELECT id FROM orders WHERE id = ? AND tenant_id = ?',
-            args: [id, tenantId]
-        });
-
-        if (checkResult.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Pesanan tidak ditemukan' });
-        }
-
-        const updates = [];
-        const values = [];
-
-        if (order_number !== undefined) {
-            updates.push('order_number = ?');
-            values.push(order_number);
-        }
-        if (customer_id !== undefined) {
-            updates.push('customer_id = ?');
-            values.push(customer_id);
-        }
-        if (order_date !== undefined) {
-            updates.push('order_date = ?');
-            values.push(order_date);
-        }
-        if (total_amount !== undefined) {
-            updates.push('total_amount = ?');
-            values.push(total_amount);
-        }
-        if (discount !== undefined) {
-            updates.push('discount = ?');
-            values.push(discount);
-        }
-        if (tax !== undefined) {
-            updates.push('tax = ?');
-            values.push(tax);
-        }
-        if (final_amount !== undefined) {
-            updates.push('final_amount = ?');
-            values.push(final_amount);
-        }
-        if (status !== undefined) {
-            updates.push('status = ?');
-            values.push(status);
-        }
-        if (payment_method !== undefined) {
-            updates.push('payment_method = ?');
-            values.push(payment_method);
-        }
-        if (delivery_date !== undefined) {
-            updates.push('delivery_date = ?');
-            values.push(delivery_date);
-        }
-
-        if (updates.length === 0) {
-            return res.status(400).json({ success: false, error: 'Tidak ada data untuk diperbarui' });
-        }
-
-        updates.push('updated_at = datetime(\'now\')');
-        values.push(id);
-        values.push(tenantId);
-
-        await tursoClient.execute({
-            sql: `UPDATE orders SET ${updates.join(', ')} WHERE id = ? AND tenant_id = ?`,
-            args: values
-        });
-
-        res.json({ success: true, message: 'Pesanan berhasil diperbarui' });
-    } catch (e) {
-        res.status(500).json({ success: false, error: e.message });
-    }
-};
-
-exports.deleteOrder = async (req, res) => {
-    try {
-        const tenantId = req.headers['x-tenant-id'] || 'default_tenant';
-        const { id } = req.params;
-
-        const checkResult = await tursoClient.execute({
-            sql: 'SELECT id FROM orders WHERE id = ? AND tenant_id = ?',
-            args: [id, tenantId]
-        });
-
-        if (checkResult.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Pesanan tidak ditemukan' });
-        }
-
-        await tursoClient.execute({
-            sql: 'DELETE FROM orders WHERE id = ? AND tenant_id = ?',
-            args: [id, tenantId]
-        });
-
-        res.json({ success: true, message: 'Pesanan berhasil dihapus' });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
