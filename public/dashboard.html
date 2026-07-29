@@ -1,666 +1,76 @@
-I'll generate the production-ready dashboard.html for the Aplikasi Toko Enterprise application. Given the file size, I'll write it in two chunks.
-
-**CHUNK 1: Writing initial dashboard.html (lines 1-300)**
-<function_calls>
-<atml:invoke name="write_to_file">
-<atml:parameter name="filepath">public/dashboard.html</atml:parameter>
-<atml:parameter name="content"><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Toko Enterprise - Dashboard</title>
+    <title>Dashboard - Aplikasi Toko Enterprise</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
-    <style>
-        :root {
-            --accent-from: #1F2937;
-            --accent-to: #3B82F6;
-        }
-        
-        * {
-            --tw-shadow-colored: 0 25px 50px -12px rgba(59, 130, 246, 0.15);
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
-        }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #1F2937, #3B82F6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #1F2937, #3B82F6);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
-        }
-        
-        .btn-secondary {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3B82F6;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            border: 1px solid #3B82F6;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-secondary:hover {
-            background: #3B82F6;
-            color: white;
-        }
-        
-        .input-field {
-            background: #111827;
-            border: 1px solid #374151;
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s;
-        }
-        
-        .input-field:focus {
-            outline: none;
-            border-color: #3B82F6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .table-header {
-            background: rgba(59, 130, 246, 0.1);
-            border-bottom: 2px solid #3B82F6;
-        }
-        
-        .table-row {
-            border-bottom: 1px solid #374151;
-            transition: background 0.3s;
-        }
-        
-        .table-row:hover {
-            background: rgba(59, 130, 246, 0.05);
-        }
-        
-        .badge-active {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10B981;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .badge-pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: #F59E0B;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .badge-completed {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3B82F6;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .badge-processing {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8B5CF6;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .sidebar {
-            background: #111827;
-            border-right: 1px solid #374151;
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            overflow-y: auto;
-        }
-        
-        .sidebar-item {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .sidebar-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-left-color: #3B82F6;
-        }
-        
-        .sidebar-item.active {
-            background: rgba(59, 130, 246, 0.2);
-            border-left-color: #3B82F6;
-            color: #3B82F6;
-        }
-        
-        .main-content {
-            margin-left: 280px;
-            min-height: 100vh;
-            background: #0F172A;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: #1F2937;
-            border-radius: 1rem;
-            padding: 2rem;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(59, 130, 246, 0.1));
-            border: 1px solid #374151;
-            border-radius: 1rem;
-            padding: 1.5rem;
-        }
-        
-        .stat-card h3 {
-            color: #9CA3AF;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: 700;
-            gradient-text;
-        }
-        
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 240px;
-            }
-            .main-content {
-                margin-left: 240px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid #374151;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .sidebar-item {
-                display: inline-block;
-                padding: 0.5rem 1rem;
-                border-bottom: 3px solid transparent;
-                border-left: none;
-            }
-            .sidebar-item:hover {
-                border-bottom-color: #3B82F6;
-                border-left: none;
-            }
-            .sidebar-item.active {
-                border-bottom-color: #3B82F6;
-                border-left: none;
-            }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .slide-up {
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #10B981;
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            z-index: 2000;
-            animation: slideDown 0.3s ease;
-        }
-        
-        @keyframes slideDown {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        .search-box {
-            position: relative;
-        }
-        
-        .search-box input {
-            padding-left: 2.5rem;
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6B7280;
-        }
-        
-        .pagination {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .pagination button {
-            padding: 0.5rem 1rem;
-            border: 1px solid #374151;
-            background: #111827;
-            color: white;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .pagination button:hover {
-            background: #3B82F6;
-            border-color: #3B82F6;
-        }
-        
-        .pagination button.active {
-            background: #3B82F6;
-            border-color: #3B82F6;
-            font-weight: 600;
-        }
-    </style>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#2563EB', dark: '#0F172A' } } } }
+    </script>
 </head>
-<body class="bg-gray-950 text-white">
-    <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 bg-gray-900 border-b border-gray-800">
-        <div class="flex items-center justify-between px-6 py-4">
-            <div class="flex items-center gap-3">
-                <div class="gradient-bg w-10 h-10 rounded-lg flex items-center justify-center font-bold">T</div>
-                <h1 class="text-xl font-bold gradient-text">Aplikasi Toko Enterprise</h1>
-            </div>
-            <div class="flex items-center gap-6">
-                <div class="search-box hidden md:block">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="globalSearch" placeholder="Cari..." class="input-field w-64" />
-                </div>
-                <button class="relative w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 transition flex items-center justify-center">
-                    🔔
-                </button>
-                <button onclick="logout()" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition">
-                    Logout
-                </button>
-            </div>
-        </div>
-    </nav>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-dark text-white p-6">
+            <h2 class="text-xl font-bold mb-10 text-blue-500">Aplikasi Toko</h2>
+            <nav class="space-y-4">
+                <a href="#" class="block py-2 px-4 bg-blue-600 rounded">Dashboard</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-800 rounded">Produk</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-800 rounded">Pesanan</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-800 rounded">Pemasok</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-800 rounded">Karyawan</a>
+            </nav>
+        </aside>
 
-    <!-- Main Layout -->
-    <div class="flex">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="p-6 border-b border-gray-800">
-                <p class="text-gray-400 text-sm">Menu Utama</p>
-            </div>
-            <div class="py-4">
-                <div class="sidebar-item active" onclick="switchTab('dashboard')">
-                    <span>📊</span>
-                    <span>Dashboard</span>
-                </div>
-                <div class="sidebar-item" onclick="switchTab('products')">
-                    <span>📦</span>
-                    <span>Produk</span>
-                </div>
-                <div class="sidebar-item" onclick="switchTab('orders')">
-                    <span>🛒</span>
-                    <span>Pesanan</span>
-                </div>
-                <div class="sidebar-item" onclick="switchTab('customers')">
-                    <span>👥</span>
-                    <span>Pelanggan</span>
-                </div>
-                <div class="sidebar-item" onclick="switchTab('suppliers')">
-                    <span>🏭</span>
-                    <span>Supplier</span>
-                </div>
-                <div class="sidebar-item" onclick="switchTab('invoices')">
-                    <span>📄</span>
-                    <span>Faktur</span>
-                </div>
-                <div class="sidebar-item" onclick="switchTab('reports')">
-                    <span>📈</span>
-                    <span>Laporan</span>
-                </div>
-            </div>
-        </div>
+        <main class="flex-1 p-8 overflow-y-auto">
+            <header class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-dark">Ringkasan Operasional</h1>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded shadow">Tambah Data</button>
+            </header>
 
-        <!-- Main Content -->
-        <div class="main-content w-full">
-            <!-- Dashboard Tab -->
-            <div id="dashboard-tab" class="tab-content fade-in p-8">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold mb-2">Dashboard Toko Enterprise</h2>
-                    <p class="text-gray-400">Selamat datang kembali! Berikut ringkasan performa bisnis Anda.</p>
+            <div class="grid grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <p class="text-gray-500">Total Produk</p>
+                    <h3 class="text-2xl font-bold">142</h3>
                 </div>
-
-                <!-- Statistics Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="stat-card card-hover">
-                        <h3>Total Pesanan</h3>
-                        <div class="value">156</div>
-                        <p class="text-gray-400 text-sm mt-2">+12% dari bulan lalu</p>
-                    </div>
-                    <div class="stat-card card-hover">
-                        <h3>Penjualan Bulan Ini</h3>
-                        <div class="value">Rp 1.2B</div>
-                        <p class="text-gray-400 text-sm mt-2">Target: Rp 1.5B</p>
-                    </div>
-                    <div class="stat-card card-hover">
-                        <h3>Produk Aktif</h3>
-                        <div class="value">342</div>
-                        <p class="text-gray-400 text-sm mt-2">8 stok rendah</p>
-                    </div>
-                    <div class="stat-card card-hover">
-                        <h3>Pelanggan Aktif</h3>
-                        <div class="value">87</div>
-                        <p class="text-gray-400 text-sm mt-2">+5 pelanggan baru</p>
-                    </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <p class="text-gray-500">Pesanan Baru</p>
+                    <h3 class="text-2xl font-bold">28</h3>
                 </div>
-
-                <!-- Charts Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-6">
-                        <h3 class="text-lg font-bold mb-6">Penjualan per Kategori (7 hari)</h3>
-                        <canvas id="categoryChart" height="300"></canvas>
-                    </div>
-                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-6">
-                        <h3 class="text-lg font-bold mb-6">Tren Pesanan</h3>
-                        <canvas id="orderTrendChart" height="300"></canvas>
-                    </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <p class="text-gray-500">Total Pemasok</p>
+                    <h3 class="text-2xl font-bold">12</h3>
                 </div>
-
-                <!-- Recent Orders -->
-                <div class="bg-gray-900 border border-gray-800 rounded-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-bold">Pesanan Terbaru</h3>
-                        <a href="#" onclick="switchTab('orders')" class="text-blue-400 hover:text-blue-300">Lihat Semua →</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="table-header">
-                                    <th class="text-left py-4 px-4 font-semibold">No. Pesanan</th>
-                                    <th class="text-left py-4 px-4 font-semibold">Pelanggan</th>
-                                    <th class="text-left py-4 px-4 font-semibold">Tanggal</th>
-                                    <th class="text-right py-4 px-4 font-semibold">Total</th>
-                                    <th class="text-center py-4 px-4 font-semibold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="table-row">
-                                    <td class="py-4 px-4 font-semibold">ORD-2026-001</td>
-                                    <td class="py-4 px-4">PT Maju Jaya Indonesia</td>
-                                    <td class="py-4 px-4">28 Jul 2026</td>
-                                    <td class="py-4 px-4 text-right">Rp 49.575.000</td>
-                                    <td class="py-4 px-4 text-center"><span class="badge-processing">Processing</span></td>
-                                </tr>
-                                <tr class="table-row">
-                                    <td class="py-4 px-4 font-semibold">ORD-2026-002</td>
-                                    <td class="py-4 px-4">CV Teknologi Maju</td>
-                                    <td class="py-4 px-4">27 Jul 2026</td>
-                                    <td class="py-4 px-4 text-right">Rp 8.050.000</td>
-                                    <td class="py-4 px-4 text-center"><span class="badge-completed">Completed</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-</atml:parameter>
-</invoke>
-</function_calls>
-
-**CHUNK 2: Appending remaining dashboard.html content (lines 301+)**
-<function_calls>
-<atml:invoke name="file_append">
-<atml:parameter name="filepath">public/dashboard.html</parameter>
-<atml:parameter name="content">
-            <!-- Products Tab -->
-            <div id="products-tab" class="tab-content fade-in p-8" style="display:none;">
-                <div class="mb-8">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h2 class="text-3xl font-bold mb-2">Manajemen Produk</h2>
-                            <p class="text-gray-400">Kelola inventaris produk dan stok Anda</p>
-                        </div>
-                        <button class="btn-primary" onclick="openModal('addProductModal')">+ Tambah Produk</button>
-                    </div>
-                </div>
-
-                <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
-                    <div class="flex gap-4 mb-6">
-                        <input type="text" placeholder="Cari produk..." class="input-field flex-1" id="productSearch" />
-                        <select class="input-field w-48">
-                            <option>Semua Kategori</option>
-                            <option>Elektronik</option>
-                            <option>Aksesori</option>
-                        </select>
-                        <select class="input-field w-48">
-                            <option>Semua Status</option>
-                            <option>Active</option>
-                            <option>Inactive</option>
-                        </select>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="table-header">
-                                    <th class="text-left py-4 px-4 font-semibold">SKU</th>
-                                    <th class="text-left py-4 px-4 font-semibold">Nama Produk</th>
-                                    <th class="text-left py-4 px-4 font-semibold">Kategori</th>
-                                    <th class="text-right py-4 px-4 font-semibold">Harga</th>
-                                    <th class="text-right py-4 px-4 font-semibold">Stok</th>
-                                    <th class="text-center py-4 px-4 font-semibold">Status</th>
-                                    <th class="text-center py-4 px-4 font-semibold">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="table-row">
-                                    <td class="py-4 px-4 font-mono text-sm">PROD-001</td>
-                                    <td class="py-4 px-4">Laptop Dell XPS 13</td>
-                                    <td class="py-4 px-4">Elektronik</td>
-                                    <td class="py-4 px-4 text-right">Rp 15.000.000</td>
-                                    <td class="py-4 px-4 text-right"><span class="text-green-400">25 unit</span></td>
-                                    <td class="py-4 px-4 text-center"><span class="badge-active">Active</span></td>
-                                    <td class="py-4 px-4 text-center">
-                                        <button onclick="editProduct(1)" class="text-blue-400 hover:text-blue-300 mr-2">Edit</button>
-                                        <button onclick="deleteProduct(1)" class="text-red-400 hover:text-red-300">Hapus</button>
-                                    </td>
-                                </tr>
-                                <tr class="table-row">
-                                    <td class="py-4 px-4 font-mono text-sm">PROD-002</td>
-                                    <td class="py-4 px-4">Monitor Samsung 27 inch</td>
-                                    <td class="py-4 px-4">Aksesori</td>
-                                    <td class="py-4 px-4 text-right">Rp 3.500.000</td>
-                                    <td class="py-4 px-4 text-right"><span class="text-green-400">50 unit</span></td>
-                                    <td class="py-4 px-4 text-center"><span class="badge-active">Active</span></td>
-                                    <td class="py-4 px-4 text-center">
-                                        <button onclick="editProduct(2)" class="text-blue-400 hover:text-blue-300 mr-2">Edit</button>
-                                        <button onclick="deleteProduct(2)" class="text-red-400 hover:text-red-300">Hapus</button>
-                                    </td>
-                                </tr>
-                                <tr class="table-row">
-                                    <td class="py-4 px-4 font-mono text-sm">PROD-003</td>
-                                    <td class="py-4 px-4">Keyboard Mechanical RGB</td>
-                                    <td class="py-4 px-4">Aksesori</td>
-                                    <td class="py-4 px-4 text-right">Rp 1.200.000</td>
-                                    <td class="py-4 px-4 text-right"><span class="text-yellow-400">100 unit</span></td>
-                                    <td class="py-4 px-4 text-center"><span class="badge-active">Active</span></td>
-                                    <td class="py-4 px-4 text-center">
-                                        <button onclick="editProduct(3)" class="text-blue-400 hover:text-blue-300 mr-2">Edit</button>
-                                        <button onclick="deleteProduct(3)" class="text-red-400 hover:text-red-300">Hapus</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="pagination mt-6">
-                        <button class="active">1</button>
-                        <button>2</button>
-                        <button>3</button>
-                    </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <p class="text-gray-500">Karyawan Aktif</p>
+                    <h3 class="text-2xl font-bold">45</h3>
                 </div>
             </div>
 
-            <!-- Orders Tab -->
-            <div id="orders-tab" class="tab-content fade-in p-8" style="display:none;">
-                <div class="mb-8">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h2 class="text-3xl font-bold mb-2">Manajemen Pesanan</h2>
-                            <p class="text-gray-400">Kelola pesanan pelanggan dan status pengiriman</p>
-                        </div>
-                        <button class="btn-primary" onclick="openModal('addOrderModal')">+ Pesanan Baru</button>
-                    </div>
-                </div>
-
-                <div class="bg-gray-900 border border-gray-800 rounded-lg p-6">
-                    <div class="flex gap-4 mb-6">
-                        <input type="text" placeholder="Cari pesanan..." class="input-field flex-1" />
-                        <select class="input-field w-48">
-                            <option>Semua Status</option>
-                            <option>Processing</option>
-                            <option>Completed</option>
-                            <option>Pending</option>
-                        </select>
-                        <select class="input-field w-48">
-                            <option>Metode Pembayaran</option>
-                            <option>Transfer</option>
-                            <option>Invoice</option>
-                            <option>Kartu Kredit</option>
-                        </select>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="table-header">
-                                    <th class="text-left py-4 px-4 font-semibold">No. Pesanan</th>
-                                    <th class="text-left py-4 px-4 font-semibold">Pelanggan</th>
-                                    <th class="text-left py-4 px-4 font-semibold">Tanggal Pesanan</th>
-                                    <th class="text-right py-4 px-4 font-semibold">Total</th>
-                                    <th class="text-left py-4 px-4 font-semibold">Metode Pembayaran</th>
-                                    <th class="text-center py-4 px-4 font-semibold">Status</th>
-                                    <th class="text-center py-4 px-4 font-semibold">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="table-row">
-                                    <td class="py-4 px-4 font-semibold">ORD-2026-001</td>
-                                    <td class="py-4 px-4">PT Maju Jaya Indonesia</td>
-                                    <td class="py-4 px-4">28 Jul 2026</td>
-                                    <td class="py-4 px-4 text-right">Rp 49.575.000</td>
-                                    <td class="py-4 px-4">Transfer</td>
-                                    <td class="py-4 px-4 text-center"><span class="badge-processing">Processing</span></td>
-                                    <td class="py-4 px-4 text-center">
-                                        <button onclick="viewOrder(1)" class="text-blue-400 hover:text-blue-300 mr-2">Lihat</button>
-                                        <button onclick="editOrder(1)" class="text-green-400 hover:text-green-300">Edit</button
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="p-4">ID</th>
+                            <th class="p-4">Nama</th>
+                            <th class="p-4">Kategori</th>
+                            <th class="p-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table">
+                        <!-- JS inject -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    <script>
+        async function fetchData() {
+            const res = await fetch('/api/data');
+            const data = await res.json();
+            // Render logic here
+        }
+        fetchData();
+    </script>
+</body>
+</html>
