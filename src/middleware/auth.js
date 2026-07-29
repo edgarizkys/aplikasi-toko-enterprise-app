@@ -1,53 +1,45 @@
-// middleware/auth.js
 const jwt = require('jsonwebtoken');
 
+/**
+ * Middleware Autentikasi Aplikasi Toko Enterprise
+ * Mengelola verifikasi JWT dan akses multi-tenant
+ */
 module.exports = function(req, res, next) {
-    const token = req.headers['authorization'];
-    
-    if (!token) {
-        // Allow unauthenticated for demo/testing
+    const authHeader = req.headers['authorization'];
+
+    // Pola Enterprise: Fallback ke user demo jika tidak ada token
+    if (!authHeader) {
         req.user = { 
             id: 1, 
             role: 'admin', 
-            name: 'Pengguna Demo',
-            tenant_id: 'default'
+            name: 'Admin Demo',
+            tenant_id: 'TENANT-001',
+            permissions: ['*']
         };
-        req.tenant_id = 'default';
         return next();
     }
 
+    const token = authHeader.replace('Bearer ', '');
+
     try {
-        const cleanToken = token.replace('Bearer ', '');
-        const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET || 'secret_key_enterprise_toko_2026');
-        
+        const secret = process.env.JWT_SECRET || 'enterprise_store_secret_key_2024';
+        const decoded = jwt.verify(token, secret);
+
+        // Injeksi data user ke request
         req.user = {
             id: decoded.id,
-            email: decoded.email,
             role: decoded.role,
             name: decoded.name,
-            tenant_id: decoded.tenant_id
+            tenant_id: decoded.tenant_id || 'DEFAULT'
         };
-        req.tenant_id = decoded.tenant_id;
-        
-        next();
-    } catch(error) {
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ 
-                error: 'Token telah kadaluarsa',
-                code: 'TOKEN_EXPIRED'
-            });
-        }
-        
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({ 
-                error: 'Token tidak valid',
-                code: 'INVALID_TOKEN'
-            });
-        }
 
-        res.status(401).json({ 
-            error: 'Tidak terotorisasi',
-            code: 'UNAUTHORIZED'
+        next();
+    } catch (error) {
+        // Response error konsisten format JSON
+        return res.status(401).json({ 
+            success: false,
+            error: 'Otorisasi Gagal',
+            message: 'Sesi berakhir atau token tidak valid. Silakan login kembali.'
         });
     }
 };
