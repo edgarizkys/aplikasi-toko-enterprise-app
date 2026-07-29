@@ -5,107 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Aplikasi Toko Enterprise</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --accent-from: #0F172A;
-            --accent-to: #2563EB;
+            --accent-from: #0EA5E9;
+            --accent-to: #6366F1;
         }
-        body {
-            background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
-            min-height: 100vh;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .input-group:focus-within label {
-            color: #60a5fa;
-            transform: translateY(-1.5rem) scale(0.85);
-        }
+        .gradient-bg { background: linear-gradient(135deg, var(--accent-from), var(--accent-to)); }
     </style>
 </head>
-<body class="flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-        <!-- Logo/Header -->
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-2xl shadow-2xl mb-4">
-                <i class="fas fa-store text-4xl text-white"></i>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-md bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700">
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">Masuk ke Toko</h2>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                <input type="email" id="email" required class="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
-            <h1 class="text-3xl font-bold text-white tracking-tight">Aplikasi Toko Enterprise</h1>
-            <p class="text-blue-200 mt-2">Manajemen Inventaris & Penjualan Terpadu</p>
-        </div>
-
-        <!-- Login Card -->
-        <div class="glass rounded-3xl p-8 shadow-2xl">
-            <form id="loginForm" class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Email atau Username</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                            <i class="fas fa-user"></i>
-                        </span>
-                        <input type="text" required 
-                            class="block w-full pl-10 pr-3 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="admin@enterprise.com">
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between mb-2">
-                        <label class="text-sm font-medium text-gray-300">Kata Sandi</label>
-                        <a href="#" class="text-sm text-blue-400 hover:text-blue-300">Lupa sandi?</a>
-                    </div>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                            <i class="fas fa-lock"></i>
-                        </span>
-                        <input type="password" required 
-                            class="block w-full pl-10 pr-3 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="••••••••">
-                    </div>
-                </div>
-
-                <div class="flex items-center">
-                    <input type="checkbox" id="remember" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 bg-white/10">
-                    <label for="remember" class="ml-2 text-sm text-gray-300">Ingat perangkat ini</label>
-                </div>
-
-                <button type="submit" 
-                    class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transform transition hover:-translate-y-0.5 active:scale-95">
-                    Masuk ke Sistem
-                </button>
-            </form>
-
-            <div class="mt-8 pt-6 border-t border-white/10 text-center">
-                <p class="text-gray-400 text-sm">
-                    Belum memiliki akses? 
-                    <a href="mailto:admin@enterprise.com" class="text-blue-400 font-semibold hover:underline">Hubungi IT Support</a>
-                </p>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Password</label>
+                <input type="password" id="password" required class="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
-        </div>
-
-        <!-- Footer -->
-        <p class="text-center mt-8 text-gray-400 text-xs uppercase tracking-widest">
-            &copy; 2023 Enterprise Store Management System v6.0
+            <button type="submit" class="w-full py-3 rounded-lg font-bold text-white gradient-bg hover:opacity-90 transition">
+                Masuk
+            </button>
+        </form>
+        <p class="mt-4 text-center text-gray-500 text-sm">
+            Belum punya akses? Hubungi admin.
         </p>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Enterprise Auth Logic
-            const btn = e.target.querySelector('button');
-            const originalText = btn.innerHTML;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Memproses...';
-            
-            // Simulate API Call
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                if (res.ok) window.location.href = '/dashboard.html';
+                else alert('Login gagal. Periksa kredensial.');
+            } catch (err) {
+                console.error(err);
+            }
         });
     </script>
 </body>
