@@ -4,7 +4,7 @@ const rateLimitMap = new Map();
 module.exports = function rateLimiter(req, res, next) {
     const ip = req.ip || req.connection.remoteAddress || '127.0.0.1';
     const now = Date.now();
-    const windowMs = 60 * 1000; 
+    const windowMs = 60 * 1000;
     const maxRequests = 100;
 
     const record = rateLimitMap.get(ip) || { count: 0, resetTime: now + windowMs };
@@ -23,8 +23,8 @@ module.exports = function rateLimiter(req, res, next) {
 
     if (record.count > maxRequests) {
         return res.status(429).json({ 
-            error: 'Terlalu banyak permintaan. Silakan coba lagi nanti.',
-            retryAfter: Math.ceil((record.resetTime - now) / 1000)
+            error: 'Batas permintaan terlampaui. Coba lagi nanti.',
+            code: 'RATE_LIMIT_EXCEEDED' 
         });
     }
 
