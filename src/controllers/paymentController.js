@@ -1,20 +1,47 @@
+// controllers/paymentController.js
+
 const paymentService = require('../services/paymentService');
-const { createClient } = require('@libsql/client');
 
-const db = createClient({
-  url: process.env.TURSO_DATABASE_URL || 'libsql://your-db.turso.io',
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
+class PaymentController {
+    async createQris(req, res) {
+        try {
+            const { orderId, amount, customerInfo } = req.body;
+            if (!orderId || !amount) return res.status(400).json({ error: 'Data tidak lengkap' });
+            
+            const result = await paymentService.createQrisTransaction(orderId, amount, customerInfo);
+            res.status(201).json(result);
+        } catch (err) {
+            res.status(500).json({ error: 'Gagal buat QRIS', details: err.message });
+        }
+    }
 
-const paymentController = {
-  /**
-   * Create new transaction
-   * POST /api/payments/create
-   */
-  async createPayment(req, res) {
-    const { orderId, method, bank, storeId } = req.body;
+    async createVA(req, res) {
+        try {
+            const { orderId, amount, bank } = req.body;
+            if (!orderId || !amount || !bank) return res.status(400).json({ error: 'Data tidak lengkap' });
+            
+            const result = await paymentService.createVirtualAccountTransaction(orderId, amount, bank);
+            res.status(201).json(result);
+        } catch (err) {
+            res.status(500).json({ error: 'Gagal buat VA', details: err.message });
+        }
+    }
 
-    try {
-      // Check order and ownership
-      const orderQuery = await db.execute({
-        sql
+    async handleWebhook(req, res) {
+        try {
+            const signature = req.headers['x-payment-signature'];
+            const isValid = paymentService.verifyWebhookSignature(req.body, signature);
+            
+            if (!isValid) return res.status(403).json({ error: 'Signature tidak valid' });
+
+            // Logic update status pesanan di DB Turso
+            // await db.execute('UPDATE sales SET status = ? WHERE id = ?', ['PAID', req.body.orderId]);
+
+            res.status(200).json({ status: 'OK' });
+        } catch (err) {
+            res.status(500).json({ error: 'Webhook gagal diproses' });
+        }
+    }
+}
+
+module.exports = new PaymentController();
