@@ -1,7 +1,7 @@
 {
   "name": "aplikasi-toko-enterprise",
   "version": "1.0.0",
-  "description": "Aplikasi Toko Enterprise - Enterprise Store Management Enterprise Platform",
+  "description": "Aplikasi Toko Enterprise - Toko & Retail Enterprise Platform",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -20,7 +20,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "eslint": "^8.52.0"
+    "nodemon": "^3.0.1"
   }
 }
