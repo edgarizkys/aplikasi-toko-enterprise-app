@@ -1,0 +1,1 @@
+// seed.ts - Fallback template (LLM unavailable)
