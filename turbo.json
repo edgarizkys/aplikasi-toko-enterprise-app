@@ -1,0 +1,48 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "version": "1",
+  "tasks": {
+    "build": {
+      "outputs": ["dist/**", ".next/**", "build/**"],
+      "cache": true,
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": [],
+      "cache": true
+    },
+    "type-check": {
+      "outputs": [],
+      "cache": true
+    },
+    "test": {
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "db:migrate": {
+      "cache": false,
+      "outputs": []
+    },
+    "db:seed": {
+      "cache": false,
+      "outputs": [],
+      "dependsOn": ["db:migrate"]
+    }
+  },
+  "globalDependencies": [
+    "tsconfig.json",
+    ".env",
+    ".env.local"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "NEXTAUTH_SECRET",
+    "NEXTAUTH_URL",
+    "API_BASE_URL"
+  ]
+}
