@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Aplikasi Toko Enterprise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --accent-from: #0EA5E9; --accent-to: #6366F1; }
+        .gradient-nav { background: linear-gradient(to right, var(--accent-from), var(--accent-to)); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="gradient-nav text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="font-bold text-xl">Aplikasi Toko Enterprise</h1>
+            <div id="user-menu" class="text-sm">Admin Toko</div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-sky-500">
+                <p class="text-gray-500 text-sm">Total Produk</p>
+                <h3 id="stat-products" class="text-2xl font-bold">0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-indigo-500">
+                <p class="text-gray-500 text-sm">Total Penjualan</p>
+                <h3 id="stat-sales" class="text-2xl font-bold">0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-teal-500">
+                <p class="text-gray-500 text-sm">Pelanggan</p>
+                <h3 id="stat-customers" class="text-2xl font-bold">0</h3>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-bold">Data Produk</h2>
+                <button onclick="openModal()" class="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600">+ Tambah</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-gray-400 border-b">
+                            <th class="pb-3">Nama</th>
+                            <th class="pb-3">Kategori</th>
+                            <th class="pb-3">Harga</th>
+                            <th class="pb-3">Stok</th>
+                            <th class="pb-3">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function fetchData() {
+            try {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                const tbody = document.getElementById('product-table');
+                tbody.innerHTML = data.map(p => `
+                    <tr class="border-b">
+                        <td class="py-4">${p.name}</td>
+                        <td class="py-4">${p.category}</td>
+                        <td class="py-4">Rp ${p.price.toLocaleString()}</td>
+                        <td class="py-4">${p.stock}</td>
+                        <td class="py-4"><button class="text-sky-600">Edit</button></td>
+                    </tr>
+                `).join('');
+                document.getElementById('stat-products').innerText = data.length;
+            } catch (e) { console.error('Fetch fail', e); }
+        }
+        fetchData();
+    </script>
+</body>
+</html>
