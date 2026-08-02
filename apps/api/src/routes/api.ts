@@ -1,0 +1,1 @@
+// api.ts - Fallback template (LLM unavailable)
