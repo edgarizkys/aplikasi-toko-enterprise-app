@@ -2,24 +2,62 @@
   "name": "aplikasi-toko-enterprise",
   "version": "1.0.0",
   "description": "Aplikasi Toko Enterprise - Toko & Retail Enterprise Platform",
-  "main": "src/app.js",
+  "main": "dist/app.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "test": "node test/unit.test.js",
-    "lint": "eslint src/"
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "test": "node --test dist/test/**/*.test.js",
+    "test:watch": "node --test --watch dist/test/**/*.test.js",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "tsx src/db/seed.ts",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "type-check": "tsc --noEmit"
   },
+  "keywords": [
+    "toko",
+    "retail",
+    "enterprise",
+    "pos",
+    "sales",
+    "inventory"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
     "dotenv": "^16.3.1",
-    "@libsql/client": "^0.3.5",
+    "@prisma/client": "^5.7.1",
     "jsonwebtoken": "^9.0.2",
     "bcryptjs": "^2.4.3",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "zod": "^3.22.4",
+    "class-validator": "^0.14.0",
+    "express-async-errors": "^3.1.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/bcryptjs": "^2.4.7",
+    "typescript": "^5.3.3",
+    "tsx": "^4.7.0",
+    "nodemon": "^3.0.2",
+    "prisma": "^5.7.1",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
