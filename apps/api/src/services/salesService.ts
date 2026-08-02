@@ -1,0 +1,1 @@
+// salesService.ts - Fallback template (LLM unavailable)
