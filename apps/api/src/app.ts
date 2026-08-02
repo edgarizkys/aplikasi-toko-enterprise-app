@@ -1,0 +1,1 @@
+// app.ts - Fallback template (LLM unavailable)
