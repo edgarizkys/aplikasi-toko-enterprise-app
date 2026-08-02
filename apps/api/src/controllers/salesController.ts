@@ -1,0 +1,1 @@
+// salesController.ts - Fallback template (LLM unavailable)
